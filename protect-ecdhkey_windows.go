@@ -30,6 +30,8 @@ func protectKey(privateKey *ecdsa.PrivateKey) error {
 // unprotectKey
 func unprotectKey() (*ecdsa.PrivateKey, error) {
 
+	home, err := os.UserHomeDir()
+	
 	cipherBytes, err := ioutil.ReadFile(home + "/" + keyFileName)
 
 	encPriv, err := dpapi.DecryptBytes(cipherBytes)
