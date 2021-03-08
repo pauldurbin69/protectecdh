@@ -4,7 +4,7 @@ package protectecdh
 
 import (
 	"crypto/ecdsa"
-	"ecdh"
+	"github.com/pauldurbin69/ecdh"
 	"io/ioutil"
 	"os"
 
