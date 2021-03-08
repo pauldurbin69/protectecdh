@@ -1,3 +1,5 @@
+// +build freebsd netbsd openbsd dragonfly solaris darmin linux
+
 package protectecdh
 
 import (
@@ -6,9 +8,8 @@ import (
 	"log"
 	"os"
 
-	"github.com/pauldurbin69/ecdh"
-
 	"github.com/denisbrodbeck/machineid"
+	"github.com/pauldurbin69/ecdh"
 )
 
 const (
@@ -17,22 +18,15 @@ const (
 )
 
 // Protect
-func protectKeyNonWindows(privateKey *ecdsa.PrivateKey) error {
+func protectKey(privateKey *ecdsa.PrivateKey) error {
 
-	key, err := getKey()
-	home, err := os.UserHomeDir()
-
-	err = ecdh.SaveEcdhKeyToFile(privateKey, key, home+"/"+keyFileName)
-
-	return err
+	return ecdh.SaveEcdhKeyToFile(privateKey, getKey(), getKeyFilePath())
 }
 
 // UnprotectKey
-func unprotectKeyNonWindows() (*ecdsa.PrivateKey, error) {
+func unprotectKey() (*ecdsa.PrivateKey, error) {
 
-	key, err := getKey()
-	home, err := os.UserHomeDir()
-	privateKey, err := ecdh.ReadEcdhKeyFromFile(key, home+"/"+keyFileName)
+	privateKey, err := ecdh.ReadEcdhKeyFromFile(getKey(), getKeyFilePath())
 
 	return privateKey, err
 }
@@ -47,4 +41,15 @@ func getKey() ([]byte, error) {
 	key, err := hex.DecodeString(id)
 
 	return key, err
+}
+
+func getKeyFilePath() (string, error) {
+
+	home, err := os.UserHomeDir()
+
+	if err != nil {
+		return "", nil
+	}
+
+	return home + "/" + keyFileName, nil
 }

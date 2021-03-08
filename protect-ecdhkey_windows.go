@@ -4,25 +4,21 @@ package protectecdh
 
 import (
 	"crypto/ecdsa"
-	"github.com/pauldurbin69/ecdh"
 	"io/ioutil"
-	"os"
 
 	"github.com/billgraziano/dpapi"
+	"github.com/pauldurbin69/ecdh"
 )
 
 // func protectKey(privateKey *ecdsa.PrivateKey) error {
 
 func protectKey(privateKey *ecdsa.PrivateKey) error {
 
-	key, err := getKey()
-	home, err := os.UserHomeDir()
-
-	bytes, err := ecdh.EncodeEcPrivateKey(privateKey, key)
+	bytes, err := ecdh.EncodeEcPrivateKey(privateKey, getKey())
 
 	cipherBytes, err := dpapi.EncryptBytesMachineLocal(bytes)
 
-	err = ioutil.WriteFile(home+"/"+keyFileName, cipherBytes, 0600)
+	err = ioutil.WriteFile(getKeyFilePath(), cipherBytes, 0600)
 
 	return err
 }
@@ -30,15 +26,11 @@ func protectKey(privateKey *ecdsa.PrivateKey) error {
 // unprotectKey
 func unprotectKey() (*ecdsa.PrivateKey, error) {
 
-	home, err := os.UserHomeDir()
-	
-	cipherBytes, err := ioutil.ReadFile(home + "/" + keyFileName)
+	cipherBytes, err := ioutil.ReadFile(getKeyFilePath())
 
 	encPriv, err := dpapi.DecryptBytes(cipherBytes)
 
-	key, err := getKey()
-
-	privateKey, err := ecdh.DecodeEcPrivateKey(encPriv, key)
+	privateKey, err := ecdh.DecodeEcPrivateKey(encPriv, getKey())
 
 	return privateKey, err
 }
