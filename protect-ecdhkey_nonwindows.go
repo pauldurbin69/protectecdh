@@ -6,7 +6,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/pauldurbin/ecdh"
+	"github.com/pauldurbin69/ecdh"
 
 	"github.com/denisbrodbeck/machineid"
 )
